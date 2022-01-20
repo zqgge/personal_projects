@@ -1,0 +1,718 @@
+
+// THIS IS ONE OF MY FIRST ANDROID APPLICATIONS AND I DIDN'T FIND THE FULL PROJECT ANYMORE BUT HERE IS A PEEK TO THE MAIN CODE
+
+import java.util.Random;
+import java.util.Scanner;
+
+public class MainActivity extends Activity {
+
+    private ViewGroup mainLayout;
+    private ImageView whatImage;
+    private ImageView lastImage;
+    private GridLayout container;
+    private ImageView image;
+    private TextView text;
+    private TextView text2;
+    private TextView text3;
+
+    Integer [] images = {
+            R.drawable.a, R.drawable.b, R.drawable.c, R.drawable.d, R.drawable.e, R.drawable.f,
+            R.drawable.g, R.drawable.h, R.drawable.i, R.drawable.j, R.drawable.k, R.drawable.l,
+            R.drawable.m, R.drawable.n, R.drawable.o, R.drawable.p, R.drawable.q, R.drawable.r,
+            R.drawable.s, R.drawable.t, R.drawable.u, R.drawable.v, R.drawable.w, R.drawable.x,
+            R.drawable.y, R.drawable.z
+    };
+
+    Integer [] libraries = {
+            R.raw.awordlist, R.raw.bwordlist, R.raw.cwordlist, R.raw.dwordlist, R.raw.ewordlist, R.raw.fwordlist,
+            R.raw.gwordlist, R.raw.hwordlist, R.raw.iwordlist, R.raw.jwordlist, R.raw.kwordlist, R.raw.lwordlist,
+            R.raw.mwordlist, R.raw.nwordlist, R.raw.owordlist, R.raw.pwordlist, R.raw.qwordlist, R.raw.rwordlist,
+            R.raw.swordlist, R.raw.twordlist, R.raw.uwordlist, R.raw.vwordlist, R.raw.wwordlist, R.raw.xwordlist,
+            R.raw.ywordlist, R.raw.zwordlist, R.raw.wordlist
+    };
+
+    ImageView on_the_table [] = new ImageView [20];
+
+    private int xDelta;
+    private int yDelta;
+    int[] c = new int[254];
+    char[] words = new char[254];
+    int i; int midCheck; int library; int imgNumber;
+    char w;
+
+    @SuppressLint({"ClickableViewAccessibility", "CutPasteId"})
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+
+        mainLayout = (RelativeLayout) findViewById(R.id.main);
+        ImageView image2 = (ImageView) findViewById(R.id.image2);
+        container = (GridLayout) findViewById(R.id.container);
+        text = (TextView) findViewById(R.id.textView);
+        text2 = (TextView) findViewById(R.id.textView2);
+        text3 = (TextView) findViewById(R.id.textView3);
+        Button checkButton = (Button) findViewById(R.id.button);
+
+        image2.setOnTouchListener(onTouchListener());
+
+        container.setColumnCount(15);
+        container.setRowCount(15);
+
+        mainLayout.setBackgroundColor(Color.parseColor("#6f7680"));
+
+        for (i=0;i<225;i++){
+            ImageView imageView = new ImageView(getApplicationContext());
+            imageView.setImageDrawable(getDrawable(R.drawable.board_tile));
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(66, 66));
+            container.addView(imageView);
+            c[i] = i;
+            words[i] = '-';
+            imageView.setTag(String.valueOf(i));
+        }
+
+        createLetters(10);
+
+
+        String imagestring = String.valueOf(c[i]);
+        image = container.findViewWithTag(imagestring);
+
+
+
+        checkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkWords();
+            }
+        });
+    }
+
+
+    private OnTouchListener onTouchListener() {
+        return new OnTouchListener() {
+
+            @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+
+
+                final int x = (int) event.getRawX();
+                final int y = (int) event.getRawY();
+
+                switch (event.getAction() & MotionEvent.ACTION_MASK) {
+
+                    case MotionEvent.ACTION_DOWN:
+
+                        RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams)
+                                view.getLayoutParams();
+
+                        xDelta = x - lParams.leftMargin;
+                        yDelta = y - lParams.topMargin;
+
+                        whatImage = (ImageView) view;
+                        if (lastImage != whatImage){
+                            imgNumber++;
+                        }
+                        lastImage = whatImage;
+                        if (whatImage.getTag() == "0"){w='a';} if (whatImage.getTag() == "1"){w='b';} if (whatImage.getTag() == "2"){w='c';} if (whatImage.getTag() == "3"){w='d';}
+                        if (whatImage.getTag() == "4"){w='e';} if (whatImage.getTag() == "5"){w='f';} if (whatImage.getTag() == "6"){w='g';} if (whatImage.getTag() == "7"){w='h';}
+                        if (whatImage.getTag() == "8"){w='i';} if (whatImage.getTag() == "9"){w='j';} if (whatImage.getTag() == "10"){w='k';} if (whatImage.getTag() == "11"){w='l';}
+                        if (whatImage.getTag() == "12"){w='m';} if (whatImage.getTag() == "13"){w='n';} if (whatImage.getTag() == "14"){w='o';} if (whatImage.getTag() == "15"){w='p';}
+                        if (whatImage.getTag() == "16"){w='q';} if (whatImage.getTag() == "17"){w='r';} if (whatImage.getTag() == "18"){w='s';} if (whatImage.getTag() == "19"){w='t';}
+                        if (whatImage.getTag() == "20"){w='u';} if (whatImage.getTag() == "21"){w='v';} if (whatImage.getTag() == "22"){w='w';} if (whatImage.getTag() == "23"){w='x';}
+                        if (whatImage.getTag() == "24"){w='y';} if (whatImage.getTag() == "25"){w='z';} if (whatImage.getTag() == "26"){w='-';}//else{w='a';}
+
+
+                        whatImage.setScaleX(2);whatImage.setScaleY(2);
+                        midCheck = 1;
+                        placer();
+                        midCheck = 0;
+                        break;
+
+                    case MotionEvent.ACTION_MOVE:
+                        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view
+                                .getLayoutParams();
+                        layoutParams.leftMargin = x - xDelta;
+                        layoutParams.topMargin = y - yDelta;
+                        layoutParams.rightMargin = 0;
+                        layoutParams.bottomMargin = 0;
+                        view.setLayoutParams(layoutParams);
+
+                        text2.setText(String.valueOf(whatImage.getWidth()/2));
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+
+
+                        placer();
+
+                        if (whatImage.getY() > container.getY()-200) {
+                            whatImage.animate().scaleX(1);
+                            whatImage.animate().scaleY(1);
+                        }
+
+                        on_the_table[imgNumber] = whatImage;
+                        text.setText(String.valueOf(on_the_table[imgNumber]));
+
+                        testDisplay();
+
+
+
+                        break;
+                }
+
+                mainLayout.invalidate();
+                return true;
+            }
+        };
+
+    }
+
+
+    @SuppressLint("SetTextI18n")
+    public void checkWords() {
+        int wordFound = 0;
+        int oneCheck = 0;
+        char charTable;
+        int wordChecker;
+        int intArray[] = new int[254];
+        int ih = 0;
+        int charCalc = 0;
+        ImageView kuva;
+        StringBuilder testi;
+        int m;
+        for (m = 0; m < 225; m += 15) {
+            for (i = m; i < m + 15; i++) {
+                // JOS EI OLE TARKISTETTU JO KERRAN, ELI JOS LÖYTYY TOINEN SANA NIIN SE ON VIRHE EIKÄ SITÄ TALLETETA
+                if (words[i] != '-' && oneCheck <2) {
+                    if (oneCheck < 1){
+                        oneCheck += 1;
+                        charTable = words[i];
+                        // VALITAAN KIRJAIMEN MUKAAN KÄYTETTÄVÄ KIRJASTO JA KIRJAIN
+                        wordChecker = wordTable(charTable);
+                        library = libraries[wordChecker];
+                        kuva = container.findViewWithTag(String.valueOf(c[i]));
+                        kuva.setImageResource(images[wordTable(words[i])]);
+                        intArray[0] = i;
+                        ih = 1;
+
+                    testi = new StringBuilder(String.valueOf(words[i]));
+
+                    while (words[i + 1] != '-' && i+1 < 225) {
+                        i++;
+                        kuva = container.findViewWithTag(String.valueOf(c[i]));
+                        kuva.setImageResource(images[wordTable(words[i])]);
+                        intArray[ih] = i;
+                        ih++;
+                        charCalc = ih;
+                        testi.append(words[i]);
+
+                    }
+                    // TARKISTETAAN LÄYTYYKÖ SANA KIRJASTOSTA
+                        try (Scanner s = new Scanner(getResources().openRawResource(library))) {
+                            while (s.hasNext()) {
+                                String word = s.next();
+                                // ....
+                                if (testi.toString().equals(word)) {
+                                    text3.setText("Sana " + word + " löydetty vaakariviltä!");
+                                    wordFound = 1;
+                                }
+                            }
+                        }
+                    }
+                    else {text3.setText("Kirjaimia ei ole asetettu oikein");}
+                }
+                 if (oneCheck == 0) {text3.setText("--");}
+                    }
+            }
+        if (wordFound != 1){
+            oneCheck = 0;
+            for (m = 0; m < 15; m++) {
+                for (i = m; i < m + 225; i += 15) {
+                     if (words[i] != '-' && oneCheck <2) {
+                         if (oneCheck < 1){
+                             oneCheck += 1;
+                             charTable = words[i];
+                             // VALITAAN KIRJAIMEN MUKAAN KÄYTETTÄVÄ KIRJASTO JA KIRJAIN
+                             wordChecker = wordTable(charTable);
+                             library = libraries[wordChecker];
+                             kuva = container.findViewWithTag(String.valueOf(c[i]));
+                             kuva.setImageResource(images[wordTable(words[i])]);
+                             intArray[0] = i;
+                             ih = 1;
+
+                        testi = new StringBuilder(String.valueOf(words[i]));
+                        while (words[i + 15] != '-' && i + 15 < 225) {
+                            i += 15;
+                            kuva = container.findViewWithTag(String.valueOf(c[i]));
+                            intArray[i] = i;
+                            kuva.setImageResource(images[wordTable(words[i])]);
+                            intArray[ih] = i;
+                            ih++;
+                            charCalc = ih;
+                            testi.append(words[i]);
+
+                        }
+                            try (Scanner s = new Scanner(getResources().openRawResource(library))) {
+                                while (s.hasNext()) {
+                                    String word = s.next();
+                                    // ....
+                                    if (testi.toString().equals(word)) {
+                                        text.setText("Sana " + word + " löydetty pystyriviltä!");
+                                        wordFound = 1;
+                                    }
+                                }
+                            }
+                         }
+                         else {text.setText("Kirjaimia ei ole asetettu oikein");}
+                     }
+                }
+                if (oneCheck == 0) {text.setText("--");}
+            }
+        }
+        // IF ANY WORD WAS NOT FOUND LETS NOT LOCK ANYTHING ON THE BOARD
+        if (wordFound != 1){
+            for (int l = 0; l<15; l++) {
+                kuva = container.findViewWithTag(String.valueOf(c[intArray[l]]));
+                kuva.setImageDrawable(getDrawable(R.drawable.board_tile));
+
+            }
+        }
+        // IF WORD IS FOUND, LETS KEEP THEM ON THE TABLE AND GET MORE LETTERS. ALSO LETS ADD THE POINTS TO THE PLAYER
+        else{
+            for (int l = 0; l<15; l++) {
+                words[intArray[l]] ='-';
+                if (on_the_table[l+1] != null){
+                whatImage = on_the_table[l+1];
+                whatImage.setVisibility(View.GONE);}
+            }
+
+            createLetters(charCalc);
+            // HERE IS THE FUNCTION CALL TO CALCULATE POINTS FROM THE WORD
+            // WORD IS SAVED TO STRING VARIABLE NAMED WORD
+
+        }
+    }
+
+
+
+    // FUNCTION TO DETERMITE WHAT LIBRARY TO USE AND WHAT TILE WE ARE CHECKING AND CHANGING THE IMAGE
+    private int wordTable(char w){
+        int wordChecker;
+        if (w == 'a'){wordChecker = 0;}else if (w == 'b'){wordChecker = 1;}else if (w == 'c'){wordChecker = 2;}else if (w == 'd'){wordChecker = 3;}else if (w == 'e'){wordChecker = 4;}
+        else if (w == 'f'){wordChecker = 5;}else if (w == 'g'){wordChecker = 6;}else if (w == 'h'){wordChecker = 7;}else if (w == 'i'){wordChecker = 8;}else if (w == 'j'){wordChecker = 9;}
+        else if (w == 'k'){wordChecker = 10;}else if (w == 'l'){wordChecker = 11;}else if (w == 'm'){wordChecker = 12;}else if (w == 'n'){wordChecker = 13;}else if (w == 'o'){wordChecker = 14;}
+        else if (w == 'p'){wordChecker = 15;}else if (w == 'q'){wordChecker = 16;}else if (w == 'r'){wordChecker = 17;}else if (w == 's'){wordChecker = 18;}else if (w == 't'){wordChecker = 19;}
+        else if (w == 'u'){wordChecker = 20;}else if (w == 'v'){wordChecker = 21;}else if (w == 'w'){wordChecker = 22;}else if (w == 'x'){wordChecker = 23;}else if (w == 'y'){wordChecker = 24;}
+        else if (w == 'z'){wordChecker = 25;}else {wordChecker = 26;}
+        return wordChecker;
+    }
+
+    // FUNCTION THAT MAKES THE NEW LETTERS
+
+    private void createLetters(int amount){
+        imgNumber = 0;
+        for (i=0;i<amount;i++){
+            Random r = new Random();
+            int random = r.nextInt(21);
+            RelativeLayout myLayout = findViewById(R.id.main);
+            ImageView img = new ImageView(this);
+            img.setLayoutParams(new ViewGroup.LayoutParams(66, 66));
+            img.setImageResource(images[random]);
+            myLayout.addView(img);
+            img.setScaleX(2);
+            img.setScaleY(2);
+            img.setX(50+i*100);img.setY(100);
+            img.setOnTouchListener(onTouchListener());
+            if (random == 0){img.setTag("0");} if (random == 1){img.setTag("1");} if (random == 2){img.setTag("2");} if (random == 3){img.setTag("3");}
+            if (random == 4){img.setTag("4");} if (random == 5){img.setTag("5");} if (random == 6){img.setTag("6");} if (random == 7){img.setTag("7");}
+            if (random == 8){img.setTag("8");} if (random == 9){img.setTag("9");} if (random == 10){img.setTag("10");} if (random == 11){img.setTag("11");}
+            if (random == 12){img.setTag("12");} if (random == 13){img.setTag("13");} if (random == 14){img.setTag("14");} if (random == 15){img.setTag("15");}
+            if (random == 16){img.setTag("16");} if (random == 17){img.setTag("17");} if (random == 18){img.setTag("18");} if (random == 19){img.setTag("19");}
+            if (random == 20){img.setTag("20");} if (random == 21){img.setTag("21");} if (random == 22){img.setTag("22");} if (random == 23){img.setTag("23");}
+            if (random == 24){img.setTag("24");} if (random == 25){img.setTag("25");} if (random == 26){img.setTag("26");}
+        }
+    }
+
+    // FUNTION TO PLACE THE CHARACTER
+    private void placer() {
+
+        int imagesPosX = (int) whatImage.getX() + whatImage.getWidth() / 2;
+        int imagesPosY = (int) whatImage.getY() + whatImage.getHeight() / 2;
+
+        if (imagesPosX < container.getX() + container.findViewWithTag(String.valueOf(c[1])).getX()) {
+            for (i = 15; i < 209; i = i + 15) {
+                if (imagesPosY > container.getY() + container.findViewWithTag(String.valueOf(c[i])).getY()
+                        && imagesPosY < container.getY() + container.findViewWithTag(String.valueOf(c[i + 15])).getY()) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        whatImage.animate().x(container.findViewWithTag(String.valueOf(c[0])).getX() + container.getX()).y(container.findViewWithTag(String.valueOf(c[i])).getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+                    }
+                }
+            }
+            if (imagesPosY <= container.getY() + container.findViewWithTag(String.valueOf(c[15])).getY()) {
+                if (midCheck == 1) {
+                    words[0] = '-';
+                } else {
+                    whatImage.animate().x(container.findViewWithTag(String.valueOf(c[0])).getX() + container.getX()).y(container.findViewWithTag(String.valueOf(c[0])).getY() + container.getY()).setDuration(300);
+                    words[0] = w;
+                }
+            }
+            if (imagesPosY > container.getY() + container.findViewWithTag(String.valueOf(c[224])).getY()) {
+                if (midCheck == 1) {
+                    words[210] = '-';
+                } else {
+                    whatImage.animate().x(container.findViewWithTag(String.valueOf(c[0])).getX() + container.getX()).y(container.findViewWithTag(String.valueOf(c[224])).getY() + container.getY()).setDuration(300);
+                    words[210] = w;
+                }
+            }
+        }
+        if (imagesPosX > container.getX() + container.findViewWithTag(String.valueOf(c[14])).getX()) {
+            for (i = 14; i < 225; i = i + 15) {
+                if (imagesPosY > container.getY() + container.findViewWithTag(String.valueOf(c[i])).getY()
+                        && imagesPosY < container.getY() + container.findViewWithTag(String.valueOf(c[i + 15])).getY()) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        whatImage.animate().x(container.findViewWithTag(String.valueOf(c[14])).getX() + container.getX()).y(container.findViewWithTag(String.valueOf(c[i])).getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+                    }
+                }
+            }
+            if (imagesPosY <= container.getY() + container.findViewWithTag(String.valueOf(c[15])).getY()) {
+                if (midCheck == 1) {
+                    words[i] = '-';
+                } else {
+                    whatImage.animate().x(container.findViewWithTag(String.valueOf(c[14])).getX() + container.getX()).y(container.findViewWithTag(String.valueOf(c[0])).getY() + container.getY()).setDuration(300);
+                    words[14] = w;
+                }
+            }
+            if (imagesPosY > container.getY() + container.findViewWithTag(String.valueOf(c[224])).getY()) {
+                if (midCheck == 1) {
+                    words[224] = '-';
+                } else {
+                    whatImage.animate().x(container.findViewWithTag(String.valueOf(c[14])).getX() + container.getX()).y(container.findViewWithTag(String.valueOf(c[224])).getY() + container.getY()).setDuration(300);
+                    words[224] = w;
+                }
+            }
+        } else {
+            for (i = 1; i < 15; i++) {
+                if (((whatImage.getX() + (whatImage.getWidth() / 2)) <= (container.findViewWithTag(String.valueOf(c[i + 1])).getX() + container.getX()))
+                        && ((whatImage.getX() - (whatImage.getWidth() / 2)) > (container.findViewWithTag(String.valueOf(c[i - 1])).getX() + container.getX()))
+                        && ((whatImage.getY() + (whatImage.getHeight() / 2)) <= (container.getY() + container.findViewWithTag(String.valueOf(c[15])).getY()))
+                        && (whatImage.getY() > (container.getY() - 200))) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        String imageString = String.valueOf(c[i]);
+                        image = container.findViewWithTag(imageString);
+                        whatImage.animate().x(image.getX() + container.getX()).y(image.getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+
+                    }
+                }
+            }
+            for (i = 210; i < 224; i++) {
+                if ((whatImage.getX() + whatImage.getWidth() / 2 <= container.findViewWithTag(String.valueOf(c[i + 1])).getX() + container.getX())
+                        && (whatImage.getX() - whatImage.getWidth() / 2 > container.findViewWithTag(String.valueOf(c[i - 1])).getX() + container.getX())
+                        && whatImage.getY() >= container.getY() + container.findViewWithTag(String.valueOf(c[209])).getY()) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        String imageString = String.valueOf(c[i]);
+                        image = container.findViewWithTag(imageString);
+                        whatImage.animate().x(image.getX() + container.getX()).y(image.getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+
+                    }
+                }
+            }
+            for (i = 15; i < 30; i++) {
+                if ((whatImage.getX() + whatImage.getWidth() / 2 <= container.findViewWithTag(String.valueOf(c[i + 1])).getX() + container.getX())
+                        && (whatImage.getX() - whatImage.getWidth() / 2 > container.findViewWithTag(String.valueOf(c[i - 1])).getX() + container.getX())
+                        && ((whatImage.getY() + whatImage.getHeight() / 2 <= container.findViewWithTag(String.valueOf(c[30])).getY() + container.getY())
+                        && whatImage.getY() - whatImage.getHeight() / 2 > container.findViewWithTag(String.valueOf(c[1])).getY() + container.getY())) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        String imageString = String.valueOf(c[i]);
+                        image = container.findViewWithTag(imageString);
+                        whatImage.animate().x(image.getX() + container.getX()).y(image.getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+                    }
+
+                }
+            }
+            for (i = 30; i < 45; i++) {
+                if ((whatImage.getX() + whatImage.getWidth() / 2 <= container.findViewWithTag(String.valueOf(c[i + 1])).getX() + container.getX())
+                        && (whatImage.getX() - whatImage.getWidth() / 2 > container.findViewWithTag(String.valueOf(c[i - 1])).getX() + container.getX())
+                        && ((whatImage.getY() + whatImage.getHeight() / 2 <= container.findViewWithTag(String.valueOf(c[45])).getY() + container.getY())
+                        && whatImage.getY() - whatImage.getHeight() / 2 > container.findViewWithTag(String.valueOf(c[15])).getY() + container.getY())) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        String imageString = String.valueOf(c[i]);
+                        image = container.findViewWithTag(imageString);
+                        whatImage.animate().x(image.getX() + container.getX()).y(image.getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+                    }
+                }
+            }
+            for (i = 45; i < 60; i++) {
+                if ((whatImage.getX() + whatImage.getWidth() / 2 <= container.findViewWithTag(String.valueOf(c[i + 1])).getX() + container.getX())
+                        && (whatImage.getX() - whatImage.getWidth() / 2 > container.findViewWithTag(String.valueOf(c[i - 1])).getX() + container.getX())
+                        && ((whatImage.getY() + whatImage.getHeight() / 2 <= container.findViewWithTag(String.valueOf(c[60])).getY() + container.getY())
+                        && whatImage.getY() - whatImage.getHeight() / 2 > container.findViewWithTag(String.valueOf(c[30])).getY() + container.getY())) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        String imageString = String.valueOf(c[i]);
+                        image = container.findViewWithTag(imageString);
+                        whatImage.animate().x(image.getX() + container.getX()).y(image.getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+                    }
+
+                }
+            }
+            for (i = 60; i < 75; i++) {
+                if ((whatImage.getX() + whatImage.getWidth() / 2 <= container.findViewWithTag(String.valueOf(c[i + 1])).getX() + container.getX())
+                        && (whatImage.getX() - whatImage.getWidth() / 2 > container.findViewWithTag(String.valueOf(c[i - 1])).getX() + container.getX())
+                        && ((whatImage.getY() + whatImage.getHeight() / 2 <= container.findViewWithTag(String.valueOf(c[75])).getY() + container.getY())
+                        && whatImage.getY() - whatImage.getHeight() / 2 > container.findViewWithTag(String.valueOf(c[45])).getY() + container.getY())) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        String imageString = String.valueOf(c[i]);
+                        image = container.findViewWithTag(imageString);
+                        whatImage.animate().x(image.getX() + container.getX()).y(image.getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+                    }
+
+                }
+            }
+            for (i = 75; i < 90; i++) {
+                if ((whatImage.getX() + whatImage.getWidth() / 2 <= container.findViewWithTag(String.valueOf(c[i + 1])).getX() + container.getX())
+                        && (whatImage.getX() - whatImage.getWidth() / 2 > container.findViewWithTag(String.valueOf(c[i - 1])).getX() + container.getX())
+                        && ((whatImage.getY() + whatImage.getHeight() / 2 <= container.findViewWithTag(String.valueOf(c[90])).getY() + container.getY())
+                        && whatImage.getY() - whatImage.getHeight() / 2 > container.findViewWithTag(String.valueOf(c[60])).getY() + container.getY())) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        String imageString = String.valueOf(c[i]);
+                        image = container.findViewWithTag(imageString);
+                        whatImage.animate().x(image.getX() + container.getX()).y(image.getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+                    }
+
+                }
+            }
+            for (i = 90; i < 105; i++) {
+                if ((whatImage.getX() + whatImage.getWidth() / 2 <= container.findViewWithTag(String.valueOf(c[i + 1])).getX() + container.getX())
+                        && (whatImage.getX() - whatImage.getWidth() / 2 > container.findViewWithTag(String.valueOf(c[i - 1])).getX() + container.getX())
+                        && ((whatImage.getY() + whatImage.getHeight() / 2 <= container.findViewWithTag(String.valueOf(c[105])).getY() + container.getY())
+                        && whatImage.getY() - whatImage.getHeight() / 2 > container.findViewWithTag(String.valueOf(c[75])).getY() + container.getY())) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        String imageString = String.valueOf(c[i]);
+                        image = container.findViewWithTag(imageString);
+                        whatImage.animate().x(image.getX() + container.getX()).y(image.getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+                    }
+
+                }
+            }
+            for (i = 105; i < 120; i++) {
+                if ((whatImage.getX() + whatImage.getWidth() / 2 <= container.findViewWithTag(String.valueOf(c[i + 1])).getX() + container.getX())
+                        && (whatImage.getX() - whatImage.getWidth() / 2 > container.findViewWithTag(String.valueOf(c[i - 1])).getX() + container.getX())
+                        && ((whatImage.getY() + whatImage.getHeight() / 2 <= container.findViewWithTag(String.valueOf(c[120])).getY() + container.getY())
+                        && whatImage.getY() - whatImage.getHeight() / 2 > container.findViewWithTag(String.valueOf(c[90])).getY() + container.getY())) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        String imageString = String.valueOf(c[i]);
+                        image = container.findViewWithTag(imageString);
+                        whatImage.animate().x(image.getX() + container.getX()).y(image.getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+                    }
+
+                }
+            }
+            for (i = 120; i < 135; i++) {
+                if ((whatImage.getX() + whatImage.getWidth() / 2 <= container.findViewWithTag(String.valueOf(c[i + 1])).getX() + container.getX())
+                        && (whatImage.getX() - whatImage.getWidth() / 2 > container.findViewWithTag(String.valueOf(c[i - 1])).getX() + container.getX())
+                        && ((whatImage.getY() + whatImage.getHeight() / 2 <= container.findViewWithTag(String.valueOf(c[135])).getY() + container.getY())
+                        && whatImage.getY() - whatImage.getHeight() / 2 > container.findViewWithTag(String.valueOf(c[105])).getY() + container.getY())) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        String imageString = String.valueOf(c[i]);
+                        image = container.findViewWithTag(imageString);
+                        whatImage.animate().x(image.getX() + container.getX()).y(image.getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+                    }
+
+                }
+            }
+            for (i = 135; i < 150; i++) {
+                if ((whatImage.getX() + whatImage.getWidth() / 2 <= container.findViewWithTag(String.valueOf(c[i + 1])).getX() + container.getX())
+                        && (whatImage.getX() - whatImage.getWidth() / 2 > container.findViewWithTag(String.valueOf(c[i - 1])).getX() + container.getX())
+                        && ((whatImage.getY() + whatImage.getHeight() / 2 <= container.findViewWithTag(String.valueOf(c[150])).getY() + container.getY())
+                        && whatImage.getY() - whatImage.getHeight() / 2 > container.findViewWithTag(String.valueOf(c[120])).getY() + container.getY())) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        String imageString = String.valueOf(c[i]);
+                        image = container.findViewWithTag(imageString);
+                        whatImage.animate().x(image.getX() + container.getX()).y(image.getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+                    }
+
+                }
+            }
+            for (i = 150; i < 165; i++) {
+                if ((whatImage.getX() + whatImage.getWidth() / 2 <= container.findViewWithTag(String.valueOf(c[i + 1])).getX() + container.getX())
+                        && (whatImage.getX() - whatImage.getWidth() / 2 > container.findViewWithTag(String.valueOf(c[i - 1])).getX() + container.getX())
+                        && ((whatImage.getY() + whatImage.getHeight() / 2 <= container.findViewWithTag(String.valueOf(c[165])).getY() + container.getY())
+                        && whatImage.getY() - whatImage.getHeight() / 2 > container.findViewWithTag(String.valueOf(c[135])).getY() + container.getY())) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        String imageString = String.valueOf(c[i]);
+                        image = container.findViewWithTag(imageString);
+                        whatImage.animate().x(image.getX() + container.getX()).y(image.getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+                    }
+
+                }
+            }
+            for (i = 165; i < 180; i++) {
+                if ((whatImage.getX() + whatImage.getWidth() / 2 <= container.findViewWithTag(String.valueOf(c[i + 1])).getX() + container.getX())
+                        && (whatImage.getX() - whatImage.getWidth() / 2 > container.findViewWithTag(String.valueOf(c[i - 1])).getX() + container.getX())
+                        && ((whatImage.getY() + whatImage.getHeight() / 2 <= container.findViewWithTag(String.valueOf(c[180])).getY() + container.getY())
+                        && whatImage.getY() - whatImage.getHeight() / 2 > container.findViewWithTag(String.valueOf(c[150])).getY() + container.getY())) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        String imageString = String.valueOf(c[i]);
+                        image = container.findViewWithTag(imageString);
+                        whatImage.animate().x(image.getX() + container.getX()).y(image.getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+                    }
+
+                }
+            }
+            for (i = 180; i < 195; i++) {
+                if ((whatImage.getX() + whatImage.getWidth() / 2 <= container.findViewWithTag(String.valueOf(c[i + 1])).getX() + container.getX())
+                        && (whatImage.getX() - whatImage.getWidth() / 2 > container.findViewWithTag(String.valueOf(c[i - 1])).getX() + container.getX())
+                        && ((whatImage.getY() + whatImage.getHeight() / 2 <= container.findViewWithTag(String.valueOf(c[195])).getY() + container.getY())
+                        && whatImage.getY() - whatImage.getHeight() / 2 > container.findViewWithTag(String.valueOf(c[165])).getY() + container.getY())) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        String imageString = String.valueOf(c[i]);
+                        image = container.findViewWithTag(imageString);
+                        whatImage.animate().x(image.getX() + container.getX()).y(image.getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+                    }
+
+                }
+            }
+            for (i = 195; i < 210; i++) {
+                if ((whatImage.getX() + whatImage.getWidth() / 2 <= container.findViewWithTag(String.valueOf(c[i + 1])).getX() + container.getX())
+                        && (whatImage.getX() - whatImage.getWidth() / 2 > container.findViewWithTag(String.valueOf(c[i - 1])).getX() + container.getX())
+                        && ((whatImage.getY() + whatImage.getHeight() / 2 <= container.findViewWithTag(String.valueOf(c[210])).getY() + container.getY())
+                        && whatImage.getY() - whatImage.getHeight() / 2 > container.findViewWithTag(String.valueOf(c[180])).getY() + container.getY())) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        String imageString = String.valueOf(c[i]);
+                        image = container.findViewWithTag(imageString);
+                        whatImage.animate().x(image.getX() + container.getX()).y(image.getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+                    }
+
+                }
+            }
+            for (i = 210; i < 225; i++) {
+                if ((whatImage.getX() + whatImage.getWidth() / 2 <= container.findViewWithTag(String.valueOf(c[i + 1])).getX() + container.getX())
+                        && (whatImage.getX() - whatImage.getWidth() / 2 > container.findViewWithTag(String.valueOf(c[i - 1])).getX() + container.getX())
+                        && ((whatImage.getY() + whatImage.getHeight() / 2 <= container.findViewWithTag(String.valueOf(c[225])).getY() + container.getY())
+                        && whatImage.getY() - whatImage.getHeight() / 2 > container.findViewWithTag(String.valueOf(c[195])).getY() + container.getY())) {
+                    if (midCheck == 1) {
+                        words[i] = '-';
+                    } else {
+                        String imageString = String.valueOf(c[i]);
+                        image = container.findViewWithTag(imageString);
+                        whatImage.animate().x(image.getX() + container.getX()).y(image.getY() + container.getY()).setDuration(300);
+                        words[i] = w;
+                    }
+
+
+                }
+            }
+
+        }
+    }
+        public static void pause ( int ms){
+            try {
+                Thread.sleep(ms);
+            } catch (InterruptedException e) {
+                System.err.format("IOException: %s%n", e);
+            }
+        }
+
+        // FUNCTION TO CREATE MAP OF WORD UNDER THE TABLE
+        @SuppressLint("SetTextI18n")
+        public void testDisplay() {
+            text2.setText(
+                    String.valueOf(words[0])+String.valueOf(words[1])+String.valueOf(words[2])+String.valueOf(words[3])+String.valueOf(words[4])
+                    +String.valueOf(words[5])+String.valueOf(words[6])+String.valueOf(words[7])+String.valueOf(words[8])+String.valueOf(words[9])
+                    +String.valueOf(words[10])+String.valueOf(words[11])+String.valueOf(words[12])+String.valueOf(words[13])+String.valueOf(words[14])
+                    +String.valueOf(words[15])+String.valueOf(words[16])+String.valueOf(words[17])+String.valueOf(words[18])+String.valueOf(words[19])
+                    +String.valueOf(words[20])+String.valueOf(words[21])+String.valueOf(words[22])+String.valueOf(words[23])+String.valueOf(words[24])
+                    +String.valueOf(words[25])+String.valueOf(words[26])+String.valueOf(words[27])+String.valueOf(words[28])+String.valueOf(words[29])
+                    +String.valueOf(words[30])+String.valueOf(words[31])+String.valueOf(words[32])+String.valueOf(words[33])+String.valueOf(words[34])
+                    +String.valueOf(words[35])+String.valueOf(words[36])+String.valueOf(words[37])+String.valueOf(words[38])+String.valueOf(words[39])
+                    +String.valueOf(words[40])+String.valueOf(words[41])+String.valueOf(words[42])+String.valueOf(words[43])+String.valueOf(words[44])
+                    +String.valueOf(words[45])+String.valueOf(words[46])+String.valueOf(words[47])+String.valueOf(words[48])+String.valueOf(words[49])
+                    +String.valueOf(words[50])+String.valueOf(words[51])+String.valueOf(words[52])+String.valueOf(words[53])+String.valueOf(words[54])
+                    +String.valueOf(words[55])+String.valueOf(words[56])+String.valueOf(words[57])+String.valueOf(words[58])+String.valueOf(words[59])
+                    +String.valueOf(words[5+55])+String.valueOf(words[6+55])+String.valueOf(words[7+55])+String.valueOf(words[8+55])+String.valueOf(words[9+55])
+                    +String.valueOf(words[10+55])+String.valueOf(words[11+55])+String.valueOf(words[12+55])+String.valueOf(words[13+55])+String.valueOf(words[14+55])
+                    +String.valueOf(words[15+55])+String.valueOf(words[16+55])+String.valueOf(words[17+55])+String.valueOf(words[18+55])+String.valueOf(words[19+55])
+                    +String.valueOf(words[20+55])+String.valueOf(words[21+55])+String.valueOf(words[22+55])+String.valueOf(words[23+55])+String.valueOf(words[24+55])
+                    +String.valueOf(words[25+55])+String.valueOf(words[26+55])+String.valueOf(words[27+55])+String.valueOf(words[28+55])+String.valueOf(words[29+55])
+                    +String.valueOf(words[30+55])+String.valueOf(words[31+55])+String.valueOf(words[32+55])+String.valueOf(words[33+55])+String.valueOf(words[34+55])
+                    +String.valueOf(words[35+55])+String.valueOf(words[36+55])+String.valueOf(words[37+55])+String.valueOf(words[38+55])+String.valueOf(words[39+55])
+                    +String.valueOf(words[40+55])+String.valueOf(words[41+55])+String.valueOf(words[42+55])+String.valueOf(words[43+55])+String.valueOf(words[44+55])
+                    +String.valueOf(words[45+55])+String.valueOf(words[46+55])+String.valueOf(words[47+55])+String.valueOf(words[48+55])+String.valueOf(words[49+55])
+                    +String.valueOf(words[50+55])+String.valueOf(words[51+55])+String.valueOf(words[52+55])+String.valueOf(words[53+55])+String.valueOf(words[54+55])
+                    +String.valueOf(words[55+55])+String.valueOf(words[56+55])+String.valueOf(words[57+55])+String.valueOf(words[58+55])+String.valueOf(words[59+55])
+                    +String.valueOf(words[10+55+50])+String.valueOf(words[11+55+50])+String.valueOf(words[12+55+50])+String.valueOf(words[13+55+50])+String.valueOf(words[14+55+50])
+                    +String.valueOf(words[15+55+50])+String.valueOf(words[16+55+50])+String.valueOf(words[17+55+50])+String.valueOf(words[18+55+50])+String.valueOf(words[19+55+50])
+                    +String.valueOf(words[20+55+50])+String.valueOf(words[21+55+50])+String.valueOf(words[22+55+50])+String.valueOf(words[23+55+50])+String.valueOf(words[24+55+50])
+                    +String.valueOf(words[25+55+50])+String.valueOf(words[26+55+50])+String.valueOf(words[27+55+50])+String.valueOf(words[28+55+50])+String.valueOf(words[29+55+50])
+                    +String.valueOf(words[30+55+50])+String.valueOf(words[31+55+50])+String.valueOf(words[32+55+50])+String.valueOf(words[33+55+50])+String.valueOf(words[34+55+50])
+                    +String.valueOf(words[35+55+50])+String.valueOf(words[36+55+50])+String.valueOf(words[37+55+50])+String.valueOf(words[38+55+50])+String.valueOf(words[39+55+50])
+                    +String.valueOf(words[40+55+50])+String.valueOf(words[41+55+50])+String.valueOf(words[42+55+50])+String.valueOf(words[43+55+50])+String.valueOf(words[44+55+50])
+                    +String.valueOf(words[45+55+50])+String.valueOf(words[46+55+50])+String.valueOf(words[47+55+50])+String.valueOf(words[48+55+50])+String.valueOf(words[49+55+50])
+                    +String.valueOf(words[50+55+50])+String.valueOf(words[51+55+50])+String.valueOf(words[52+55+50])+String.valueOf(words[53+55+50])+String.valueOf(words[54+55+50])
+                    +String.valueOf(words[55+55+50])+String.valueOf(words[56+55+50])+String.valueOf(words[57+55+50])+String.valueOf(words[58+55+50])+String.valueOf(words[59+55+50])
+                    +String.valueOf(words[10+55+50+50])+String.valueOf(words[11+55+50+50])+String.valueOf(words[12+55+50+50])+String.valueOf(words[13+55+50+50])+String.valueOf(words[14+55+50+50])
+                    +String.valueOf(words[15+55+50+50])+String.valueOf(words[16+55+50+50])+String.valueOf(words[17+55+50+50])+String.valueOf(words[18+55+50+50])+String.valueOf(words[19+55+50+50])
+                    +String.valueOf(words[20+55+50+50])+String.valueOf(words[21+55+50+50])+String.valueOf(words[22+55+50+50])+String.valueOf(words[23+55+50+50])+String.valueOf(words[24+55+50+50])
+                    +String.valueOf(words[25+55+50+50])+String.valueOf(words[26+55+50+50])+String.valueOf(words[27+55+50+50])+String.valueOf(words[28+55+50+50])+String.valueOf(words[29+55+50+50])
+                    +String.valueOf(words[30+55+50+50])+String.valueOf(words[31+55+50+50])+String.valueOf(words[32+55+50+50])+String.valueOf(words[33+55+50+50])+String.valueOf(words[34+55+50+50])
+                    +String.valueOf(words[35+55+50+50])+String.valueOf(words[36+55+50+50])+String.valueOf(words[37+55+50+50])+String.valueOf(words[38+55+50+50])+String.valueOf(words[39+55+50+50])
+                    +String.valueOf(words[40+55+50+50])+String.valueOf(words[41+55+50+50])+String.valueOf(words[42+55+50+50])+String.valueOf(words[43+55+50+50])+String.valueOf(words[44+55+50+50])
+                    +String.valueOf(words[45+55+50+50])+String.valueOf(words[46+55+50+50])+String.valueOf(words[47+55+50+50])+String.valueOf(words[48+55+50+50])+String.valueOf(words[49+55+50+50])
+                    +String.valueOf(words[50+55+50+50])+String.valueOf(words[51+55+50+50])+String.valueOf(words[52+55+50+50])+String.valueOf(words[53+55+50+50])+String.valueOf(words[54+55+50+50])
+                    +String.valueOf(words[55+55+50+50])+String.valueOf(words[56+55+50+50])+String.valueOf(words[57+55+50+50])+String.valueOf(words[58+55+50+50])+String.valueOf(words[59+55+50+50])
+                    +String.valueOf(words[45+55+50+50+15])+String.valueOf(words[46+55+50+50+15])+String.valueOf(words[47+55+50+50+15])+String.valueOf(words[48+55+50+50+15])+String.valueOf(words[49+55+50+50+15])
+                    +String.valueOf(words[50+55+50+50+15])+String.valueOf(words[51+55+50+50+15])+String.valueOf(words[52+55+50+50+15])+String.valueOf(words[53+55+50+50+15])+String.valueOf(words[54+55+50+50+15]));
+        }
+    }
