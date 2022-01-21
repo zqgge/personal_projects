@@ -1,4 +1,5 @@
 info
+(See the portfolio_images.png for quick view)
 
 School Projects:
 
