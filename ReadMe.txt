@@ -6,6 +6,8 @@ School Projects:
 
 2. web_food_delivery (Javascript, React, Express, PostgreSQL database. Food delivery application similar to Wolt and Foodora, but in web browser. The application has two main user types: Consumer user and Restaurant operator. Consumer user is a restaurant customer, who wants to order food from the restaurant. Restaurant manager is a user who operates a restaurant, can create the restaurant to the system, can create restaurant menu to the system and manages food orders from consumer users.)
 
+3. arduino_uncrashable_car (Arduino, C. Little car that you can control with android app that connects in with bluetooth. There is 2 modes you can choose: 1. Car follows line drawn to the surface. 2. You can move the car with your phone and it will automaticly avoid any obsticles on the way by either stopping or going around it.)
+
 
 Personal Projects:
 
